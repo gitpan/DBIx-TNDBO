@@ -13,18 +13,31 @@ Your Database Module
   use base qw( DBIx::TNDBO );
 
   sub credentials {
-      my ($database) = @_;
+      my ($dbname) = @_;
       return {
           user   => 'dylan',
           pass   => 'foobar1',
           driver => 'mysql',
-          dbname => 'words',
+          dbname => 'language',
           host   => 'localhost',
           port   => 3306,
       };
   }
 
   1;
+
+Your MySQL Table
+
+  mysql> desc word;
+  +---------+----------------------+------+-----+-------------------+----------------+
+  | Field   | Type                 | Null | Key | Default           | Extra          |
+  +---------+----------------------+------+-----+-------------------+----------------+
+  | id      | int(11)              | NO   | PRI | NULL              | auto_increment |
+  | data    | varchar(100)         | YES  |     | NULL              |                |
+  | lang    | enum('en','ja','es') | NO   |     | en                |                |
+  | anagram | varchar(100)         | YES  |     |                   |                |
+  | created | timestamp            | NO   |     | CURRENT_TIMESTAMP |                |
+  +---------+----------------------+------+-----+-------------------+----------------+
 
 Your Program
 
@@ -75,7 +88,7 @@ syntax for getters and setters.
 =head1 USE LINE
 
 The use line for your module is where you state the names of the databases
-you intent to interact with. Otherwise, give the name of the key in the
+you intend to interact with. Otherwise, give the name of the key in the
 credentials hash which has the database name, with a leading colon.
 
   use YDB qw( :dbname );
@@ -94,12 +107,12 @@ choose a package name (and database name) which suits you.
 
 =head1 CONSTRUCTORS
 
-Create a record a new record object.
+Create a new record object.
 
   my $word_dbo = YDB();
 
-This creates an object with schema relevant getters &amp; setters. In this
-example we've created an instance of the `word` table in the `language` table.
+This creates an object with schema relevant getters & setters. In this
+example we've created an instance of the `word` table in the `language` database.
 
 Where clauses are given with a hash reference which is transformed to SQL
 via the L<SQL::Abstract> module.
@@ -180,12 +193,12 @@ Standard iterator interface includes:
 =head1 NAMING CONVENTIONS
 
 This module uses source filtering to provide the abbreviated syntax for the
-abreviated syntax for different record object constructor types and the
-get/set operations on record objects.
+different record object constructor types and the get/set operations on
+record objects.
 
 Therefore the naming conventions are crucial for directing how a given
 statement should be expaned and also to avoid allowing the source filter to
-inadvertenly modify unrelated code. 
+inadvertenly modify unrelated code.
 
 Examples:
 
@@ -207,15 +220,29 @@ Examples:
 
 =head1 LIMITATIONS
 
+=over
+
+=item *
+
+Ambiguous table names
+
 There will be confusion if you have multiple databases which have a table of
 the same name. For example:
 
-  use YDB qw( db_a db_b );
+  use YDB qw( database_a database_b );
 
   my $word_dbo = YDB();
 
-If there is both a db_a.word table and a db_b.word table then the results in
-this case are not defined.
+If there is both a database_a.word table and a database_b.word table then the
+results in this case are not defined.
+
+=item *
+
+This module was developed and tested with MySQL. It will build a DSN based on
+whatever values are returned from your credentials() function. However, there
+is no accounting for whatever database idiosyncracies there may be.
+
+=back
 
 =head1 ABOUT
 
@@ -229,7 +256,7 @@ The key features of this module are accomplished using:
 
 =item * disk caching of schema data
 
-=item * dynamic symbol table manipulation at load time
+=item * dynamic symbol table manipulation at load time.
 
 =back
 
@@ -251,7 +278,7 @@ Dylan Doxey, E<lt>dylan@cpan.orgE<gt>
 Copyright (C) 2013 by Dylan Doxey
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.14.2 or,
+it under the same terms as Perl itself, either Perl version 5.10 or,
 at your option, any later version of Perl 5 you may have available.
 
 

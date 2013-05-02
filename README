@@ -1,4 +1,4 @@
-DBIx-TNDBO version 0.01
+DBIx-TNDBO version 0.02
 =======================
 
 This module is designed to be used as the base class for your own DBI wrapper
